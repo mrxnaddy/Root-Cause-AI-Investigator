@@ -17,17 +17,49 @@ this as similar" trust question.
 import re
 
 STOPWORDS = {
-    "the", "a", "an", "is", "was", "were", "to", "of", "in", "on", "for",
-    "and", "or", "by", "with", "this", "that", "it", "its", "due", "from",
-    "after", "before", "at", "as", "be", "been", "has", "have", "had",
-    "not", "but", "than", "then", "into", "over", "during",
+    "the",
+    "a",
+    "an",
+    "is",
+    "was",
+    "were",
+    "to",
+    "of",
+    "in",
+    "on",
+    "for",
+    "and",
+    "or",
+    "by",
+    "with",
+    "this",
+    "that",
+    "it",
+    "its",
+    "due",
+    "from",
+    "after",
+    "before",
+    "at",
+    "as",
+    "be", "been",
+    "has",
+    "have",
+    "had",
+    "not",
+    "but",
+    "than",
+    "then",
+    "into",
+    "over",
+    "during",
 }
 
 
 def _tokenize(text: str) -> set:
     if not text:
         return set()
-    words = re.findall(r"[a-z0-9]+", text.lower())
+    words = re.findall(r"[a-z0-9]+", str(text).lower())
     return {w for w in words if w not in STOPWORDS and len(w) > 2}
 
 
@@ -49,19 +81,28 @@ def _evidence_overlap(sources_a: list, sources_b: list):
     return (len(shared) / len(union) if union else 0.0), shared
 
 
-def find_similar_incidents(current_root_cause: dict, history_entries: list,
-                            threshold: float = 0.15, top_n: int = 3) -> list:
+def find_similar_incidents(
+    current_root_cause,
+    history_entries: list,
+    threshold: float = 0.15,
+    top_n: int = 3,
+) -> list:
     """
-    current_root_cause: the "root_cause" dict from the investigation just run
-    history_entries: list of entries from utils.history (should EXCLUDE the
-                      current investigation itself, if it was already saved)
+    current_root_cause: string or dictionary containing root cause information
+    history_entries: list of entries from utils.history
+    """
+    # Safe handling: Check if dict or string
+    if isinstance(current_root_cause, dict):
+        desc = current_root_cause.get("description", "")
+        current_sources = current_root_cause.get("evidence_sources", [])
+    elif isinstance(current_root_cause, str):
+        desc = current_root_cause
+        current_sources = []
+    else:
+        desc = str(current_root_cause or "")
+        current_sources = []
 
-    Returns up to `top_n` matches at or above `threshold`, sorted strongest
-    first. Each match: {"entry", "combined_score", "text_similarity",
-    "evidence_overlap_score", "matched_terms", "shared_evidence_files"}.
-    """
-    current_tokens = _tokenize(current_root_cause.get("description", ""))
-    current_sources = current_root_cause.get("evidence_sources", [])
+    current_tokens = _tokenize(desc)
 
     matches = []
     for entry in history_entries:
@@ -69,9 +110,17 @@ def find_similar_incidents(current_root_cause: dict, history_entries: list,
         past_tokens = _tokenize(past_description)
         text_sim = jaccard_similarity(current_tokens, past_tokens)
 
-        past_root_cause = (entry.get("full_result") or {}).get("root_cause", {})
-        past_sources = past_root_cause.get("evidence_sources", [])
-        evidence_score, shared_files = _evidence_overlap(current_sources, past_sources)
+        past_root_cause = (entry.get("full_result") or {}).get(
+            "root_cause", {}
+        )
+        if isinstance(past_root_cause, dict):
+            past_sources = past_root_cause.get("evidence_sources", [])
+        else:
+            past_sources = []
+
+        evidence_score, shared_files = _evidence_overlap(
+            current_sources, past_sources
+        )
 
         combined_score = round(0.6 * text_sim + 0.4 * evidence_score, 3)
 
@@ -96,10 +145,12 @@ def format_similarity_summary(match: dict) -> str:
     if match["matched_terms"]:
         reasons.append(f"shared terms: {', '.join(match['matched_terms'][:5])}")
     if match["shared_evidence_files"]:
-        reasons.append(f"same evidence files: {', '.join(match['shared_evidence_files'][:3])}")
+        reasons.append(
+            f"same evidence files: {', '.join(match['shared_evidence_files'][:3])}"
+        )
     reason_str = "; ".join(reasons) if reasons else "similar overall pattern"
 
     return (
         f"{pct}% similar to a past investigation from {entry.get('timestamp', 'an earlier session')} "
-        f"(\"{entry.get('question', '')}\") -- {reason_str}."
+        f'("{entry.get("question", "")}") -- {reason_str}.'
     )
