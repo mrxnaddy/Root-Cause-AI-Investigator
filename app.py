@@ -264,6 +264,11 @@ def render_sidebar():
 
     st.sidebar.divider()
 
+# Check karein ke evidence events hon YA files upload hui hon
+    has_data = bool(st.session_state.get("evidence_events")) or bool(
+        st.session_state.get("parsed_files")
+    )
+
     question = st.sidebar.text_area(
         "Ask: why did this happen?",
         placeholder="e.g. Why did sales fall between Aug 12-18?",
@@ -271,18 +276,23 @@ def render_sidebar():
     )
 
     investigate_clicked = st.sidebar.button(
-        "🕵️ Investigate", type="primary", use_container_width=True,
-        disabled=not st.session_state.evidence_events,
+        "🕵️ Investigate",
+        type="primary",
+        use_container_width=True,
+        disabled=not has_data,
     )
 
-    if not st.session_state.evidence_events:
+    if not has_data:
         st.sidebar.markdown(
             '<div style="background:rgba(245,158,11,0.12); border:1px solid #f59e0b; '
             'border-radius:8px; padding:8px 12px; font-size:13px; color:#f59e0b;">'
-            '⚠ No evidence loaded yet. Click <b>Load Sample Data</b> or upload files above '
-            '-- the Investigate button unlocks automatically once evidence is ready.</div>',
+            "⚠ No evidence loaded yet. Click <b>Load Sample Data</b> or upload files above "
+            "-- the Investigate button unlocks automatically once evidence is ready.</div>",
             unsafe_allow_html=True,
         )
+
+    # Function ka return statement - Indentation match hona zaroori hai
+    return question, investigate_clicked
 
     st.sidebar.divider()
     st.session_state.show_urdu = st.sidebar.checkbox("🌐 Show Urdu translation", value=st.session_state.show_urdu)
