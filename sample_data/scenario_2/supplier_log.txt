@@ -1,0 +1,10 @@
+2025-09-01 08:00:00 INFO procurement: switched packaging supplier from PackCo to LiteBox Materials to cut costs
+2025-09-01 09:30:00 INFO procurement: first shipment using LiteBox thinner-gauge plastic clasps received at warehouse
+2025-09-03 14:00:00 WARN qa: incoming inspection flagged higher clasp brittleness in LiteBox batch #2291, passed with caution
+2025-09-04 10:00:00 ERROR qa: 12 units failed drop-test using LiteBox packaging, cracked lids on impact
+2025-09-05 11:00:00 ERROR qa: drop-test failure rate for LiteBox batch now at 38%, PackCo batches remained at 2%
+2025-09-06 09:00:00 CRITICAL qa: recommending immediate hold on LiteBox packaging pending supplier review
+2025-09-07 10:00:00 ERROR qa: LiteBox batch #2295 failure rate 41%, consistent with field complaints
+2025-09-09 17:00:00 INFO procurement: decision made to revert to PackCo packaging supplier
+2025-09-10 08:00:00 INFO procurement: PackCo packaging restocked, LiteBox batches pulled from active inventory
+2025-09-11 09:00:00 INFO qa: drop-test failure rate back to 3% after reverting to PackCo packaging

@@ -1,0 +1,17 @@
+2025-08-11 22:14:03 INFO deploy: checkout-redirect-service v4 deployed to production
+2025-08-12 06:03:11 WARN payment-gateway: elevated latency on mobile-init endpoint (avg 4200ms)
+2025-08-12 09:41:55 ERROR payment-gateway: timeout calling /mobile/payment-init after 5000ms
+2025-08-12 09:42:10 ERROR payment-gateway: timeout calling /mobile/payment-init after 5000ms
+2025-08-13 01:15:22 ERROR checkout-redirect-service: null reference in mobile redirect handler (v4)
+2025-08-13 01:15:23 ERROR checkout-redirect-service: null reference in mobile redirect handler (v4)
+2025-08-13 08:30:00 ERROR payment-gateway: 502 Bad Gateway on /mobile/payment-confirm x312 occurrences
+2025-08-14 00:00:00 ERROR payment-gateway: 502 Bad Gateway on /mobile/payment-confirm x489 occurrences
+2025-08-14 12:18:45 CRITICAL checkout-redirect-service: mobile checkout success rate dropped to 22%
+2025-08-15 00:00:00 ERROR payment-gateway: 502 Bad Gateway on /mobile/payment-confirm x510 occurrences
+2025-08-15 09:02:31 CRITICAL checkout-redirect-service: mobile checkout success rate dropped to 18%
+2025-08-16 00:00:00 ERROR payment-gateway: 502 Bad Gateway on /mobile/payment-confirm x495 occurrences
+2025-08-17 00:00:00 ERROR payment-gateway: 502 Bad Gateway on /mobile/payment-confirm x501 occurrences
+2025-08-18 00:00:00 ERROR payment-gateway: 502 Bad Gateway on /mobile/payment-confirm x488 occurrences
+2025-08-18 23:50:12 INFO deploy: checkout-redirect-service v4 rollback initiated
+2025-08-19 00:05:00 INFO deploy: checkout-redirect-service v3 (rollback) live in production
+2025-08-19 06:00:00 INFO payment-gateway: mobile checkout success rate recovered to 96%

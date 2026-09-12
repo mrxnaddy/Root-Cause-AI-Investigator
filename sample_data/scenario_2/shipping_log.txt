@@ -1,0 +1,9 @@
+2025-09-01 00:00:00 INFO shipping: outbound volume normal, 340 packages shipped
+2025-09-02 00:00:00 INFO shipping: outbound volume normal, 355 packages shipped
+2025-09-04 00:00:00 WARN returns: return shipments up 3x versus daily average, reason code "damaged in transit" dominant
+2025-09-05 00:00:00 WARN returns: return shipments up 6x versus daily average, warehouse return bins overflowing
+2025-09-06 00:00:00 CRITICAL returns: return processing backlog now 4 days, majority reason "cracked packaging"
+2025-09-07 00:00:00 WARN returns: return volume remains elevated, 7x daily average
+2025-09-08 00:00:00 WARN returns: return volume remains elevated, 8x daily average
+2025-09-10 00:00:00 INFO returns: return volume declining, back to 2x daily average after packaging revert
+2025-09-11 00:00:00 INFO returns: return volume back to normal baseline
