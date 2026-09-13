@@ -15,8 +15,8 @@ from datetime import datetime
 # ---------------------------------------------------------------------------
 
 def generate_markdown_report(question: str, timeline_events: list,
-                              root_cause: dict, alternative_causes: list,
-                              reasoning_summary: str = "") -> str:
+                             root_cause: dict, alternative_causes: list,
+                             reasoning_summary: str = "") -> str:
     lines = []
     lines.append("# Root Cause Investigation Report")
     lines.append(f"*Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}*")
@@ -98,6 +98,7 @@ def generate_pdf_report(question: str, timeline_events: list,
     from fpdf import FPDF
 
     pdf = FPDF()
+    pdf.set_margins(10, 10, 10)
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
@@ -113,7 +114,7 @@ def generate_pdf_report(question: str, timeline_events: list,
 
     # Question
     pdf.set_font("Helvetica", "B", 12)
-    pdf.multi_cell(0, 7, _safe_text(f"Question asked: {question}"))
+    pdf.multi_cell(0, 7, _safe_text(f"Question asked: {question}"), wrapmode="CHAR")
     pdf.ln(2)
 
     # Root cause section
@@ -122,7 +123,7 @@ def generate_pdf_report(question: str, timeline_events: list,
 
     if root_cause:
         pdf.set_font("Helvetica", "B", 12)
-        pdf.multi_cell(0, 7, _safe_text(root_cause.get("description", "N/A")))
+        pdf.multi_cell(0, 7, _safe_text(root_cause.get("description", "N/A")), wrapmode="CHAR")
 
         pdf.set_font("Helvetica", "B", 12)
         pdf.set_text_color(200, 30, 30)
@@ -134,12 +135,12 @@ def generate_pdf_report(question: str, timeline_events: list,
             pdf.set_font("Helvetica", "", 11)
             pdf.cell(0, 7, _safe_text("Supporting evidence:"), ln=True)
             for item in evidence:
-                pdf.multi_cell(0, 6, _safe_text(f"  - {item}"))
+                pdf.multi_cell(0, 6, _safe_text(f"  - {item}"), wrapmode="CHAR")
 
         sources = root_cause.get("evidence_sources", [])
         if sources:
             pdf.set_font("Helvetica", "I", 10)
-            pdf.multi_cell(0, 6, _safe_text(f"Evidence sources: {', '.join(sources)}"))
+            pdf.multi_cell(0, 6, _safe_text(f"Evidence sources: {', '.join(sources)}"), wrapmode="CHAR")
     else:
         pdf.set_font("Helvetica", "I", 11)
         pdf.cell(0, 7, _safe_text("No root cause identified yet."), ln=True)
@@ -153,7 +154,7 @@ def generate_pdf_report(question: str, timeline_events: list,
         for alt in alternative_causes:
             desc = alt.get("description", "N/A")
             conf = alt.get("confidence", 0)
-            pdf.multi_cell(0, 6, _safe_text(f"- {desc} (Confidence: {conf}%)"))
+            pdf.multi_cell(0, 6, _safe_text(f"- {desc} (Confidence: {conf}%)"), wrapmode="CHAR")
     else:
         pdf.cell(0, 7, _safe_text("None identified."), ln=True)
     pdf.ln(4)
@@ -164,7 +165,7 @@ def generate_pdf_report(question: str, timeline_events: list,
     pdf.set_font("Helvetica", "", 9)
 
     if timeline_events:
-        col_widths = [22, 30, 108, 30]
+        col_widths = [24, 28, 108, 28]
         headers = ["Date", "Type", "Description", "Source"]
         pdf.set_font("Helvetica", "B", 9)
         for w, h in zip(col_widths, headers):
@@ -175,8 +176,8 @@ def generate_pdf_report(question: str, timeline_events: list,
         for e in timeline_events:
             date = _safe_text(e.get("date", ""))
             etype = _safe_text(e.get("classification", e.get("type", "")))
-            desc = _safe_text(e.get("description", ""))[:70]
-            source = _safe_text(e.get("source_file", ""))[:18]
+            desc = _safe_text(e.get("description", ""))[:65]
+            source = _safe_text(e.get("source_file", ""))[:16]
 
             pdf.cell(col_widths[0], 6, date, border=1)
             pdf.cell(col_widths[1], 6, etype, border=1)
@@ -192,7 +193,7 @@ def generate_pdf_report(question: str, timeline_events: list,
         pdf.set_font("Helvetica", "B", 14)
         pdf.cell(0, 10, _safe_text("Reasoning Summary"), ln=True)
         pdf.set_font("Helvetica", "", 11)
-        pdf.multi_cell(0, 6, _safe_text(reasoning_summary))
+        pdf.multi_cell(0, 6, _safe_text(reasoning_summary), wrapmode="CHAR")
 
     # fpdf2 returns a bytearray with dest="S"; normalize to bytes for Streamlit's download_button
     return bytes(pdf.output(dest="S"))
